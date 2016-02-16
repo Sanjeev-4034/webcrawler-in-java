@@ -23,7 +23,7 @@ import org.jsoup.select.Elements;
 	 */
 	private static final long serialVersionUID = 1L;
 
-public Document connect_to_url(String url)
+public Document connectUrl(String url)
 {
 	Document doc=null;
 	try
@@ -36,20 +36,12 @@ public Document connect_to_url(String url)
 	}
 	return doc;
 }
-public void collect_links(Document doc,String url) throws IOException
+public void collectLinks(Document doc,String url) throws IOException
 {
 	int i=0;
 	System.out.println("enter the year");
 	BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
 	String year=br.readLine();
-	/*File file = new File(year);
-	if (!file.exists()) {
-		if (file.mkdir()) {
-			System.out.println("Directory is created!");
-		} else {
-			System.out.println("Failed to create directory!");
-		}
-	}*/
 	DeleteFiles df=new DeleteFiles();
     df.deleteFiles("/home/sanjeevn/arena/crawler1", ".txt");
 	Elements links=doc.select("a[href]");
@@ -58,23 +50,23 @@ public void collect_links(Document doc,String url) throws IOException
 		if(link.toString().contains(year) && link.toString().contains("thread"))
 		{
 		url=url.concat(link.attr("href").toString());
-		Document temp_doc_1=connect_to_url(url);
-		Elements temp_links_1=temp_doc_1.select("a[href]");
-		for(Element temp_link_1 : temp_links_1)
+		Document tempDoc1=connectUrl(url);
+		Elements tempLinks1=tempDoc1.select("a[href]");
+		for(Element tempLink1 : tempLinks1)
 		{
-			if(temp_link_1.toString().contains("%"))
+			if(tempLink1.toString().contains("%"))
 			{
 				url=url.replaceAll("/thread","/raw/");
-				url=url.concat(temp_link_1.attr("href").toString());
-				Document temp_doc_2=connect_to_url(url);
-				String file_name="file"+i+".txt";
+				url=url.concat(tempLink1.attr("href").toString());
+				Document tempDoc2=connectUrl(url);
+				String fileName="file"+i+".txt";
 				i++;
 				FileOutputStream fileOut=null;
 				ObjectOutputStream objectOut;
 				try {
-					 fileOut = new FileOutputStream(file_name);
+					 fileOut = new FileOutputStream(fileName);
 					objectOut = new ObjectOutputStream(fileOut);
-					objectOut.writeObject(temp_doc_2.text());
+					objectOut.writeObject(tempDoc2.text());
 					System.out.println("file is created");
 					} 
 			    catch (Exception e) {
@@ -92,8 +84,8 @@ public void collect_links(Document doc,String url) throws IOException
 public static void main(String[] args) throws IOException  {
 	String url="http://mail-archives.apache.org/mod_mbox/maven-users/";
 	App app1=new App();
-	Document actual_doc=app1.connect_to_url(url);
-		app1.collect_links(actual_doc,url);
+	Document actualDoc=app1.connectUrl(url);
+		app1.collectLinks(actualDoc,url);
 	
 }	
 }
