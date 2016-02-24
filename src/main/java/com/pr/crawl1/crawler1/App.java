@@ -1,14 +1,9 @@
 package com.pr.crawl1.crawler1;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -22,11 +17,8 @@ class App implements Runnable {
 	/**
 	 * 
 	 */
-	String from;
-	String subject;
-	String date;
-	String content;
 	String url;
+	String year;
 
 	App() {
 
@@ -53,9 +45,6 @@ class App implements Runnable {
 	public void collectLinks(Document doc, String url) throws IOException {
 		int n = 0;
 		final String[] urls = new String[12];
-		System.out.println("enter the year");
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		String year = br.readLine();
 		DeleteFiles df = new DeleteFiles();
 		df.deleteFiles("/home/sanjeevn/arena/crawler1", ".txt");
 		Elements threadLinks = doc.select("a[href]");
@@ -67,6 +56,10 @@ class App implements Runnable {
 				url = url.substring(0, 53);
 			}
 		}
+		createThreads(urls, n);
+	}
+
+	public void createThreads(String[] urls, int n) {
 		Thread[] threads = new Thread[12];
 		App[] app = new App[12];
 		for (int i = 0; i < n; i++) {
@@ -88,21 +81,17 @@ class App implements Runnable {
 				}
 				url = url.concat(emailLink.attr("href").toString());
 				Document emailDoc = connectUrl(url);
+				CollectStates cs = new CollectStates(emailDoc);
 				try {
-					from = emailDoc.select("from").text();
-					subject = emailDoc.select("subject").text();
-					date = emailDoc.select("date").text();
-					content = emailDoc.select("contents").text();
-					date = date + ".txt";
-					File file = new File(date);
+					File file = new File(cs.getDate());
 					FileWriter fileWriter = new FileWriter(
 							file.getAbsoluteFile());
 					BufferedWriter bw = new BufferedWriter(fileWriter);
-					bw.write("From :" + from);
-					bw.write("\n\nsubject:" + subject);
-					bw.write("\n\ncontents:" + content);
+					bw.write("From :" + cs.getFrom());
+					bw.write("\n\nsubject:" + cs.getSubject());
+					bw.write("\n\ncontents:" + cs.getContent());
 					bw.close();
-					System.out.println("file is created");
+					System.out.println(cs.getDate() + " is created");
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
