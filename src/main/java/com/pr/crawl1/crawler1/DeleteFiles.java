@@ -24,7 +24,7 @@ public class DeleteFiles {
 			for (int i = 0; i < list.length; i++) {
 				System.out.println(dir + list[i]);
 				file = new File(list[i]);
-				boolean isdeleted = file.delete();
+				file.delete();
 			}
 		}
 	}
